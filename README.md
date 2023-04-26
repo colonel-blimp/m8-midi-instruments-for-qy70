@@ -4,16 +4,17 @@
 
 * [Overview](#overview)
 * [Contents](#contents)
-* [Normal Voice Instruments](#normal-voice-instruments)
-* [SFX Voice Instruments](#sfx-voice-instruments)
-* [Drum Voice Instruments (XG drumkits)](#drum-voice-instruments-xg-drumkits)
-* [SFX Drum Voice Instruments (SFXkits)](#sfx-drum-voice-instruments-sfxkits)
-* [(CC-only) Mix-in utility instruments](#cc-only-mix-in-utility-instruments)
-  * [Using mix-ins](#using-mix-ins)
-  * [`SW+PEDAL CC.M8I`](#swpedal-ccm8i)
-  * [`NRPN RPN CC.M8I`](#nrpn-rpn-ccm8i)
-    * [NRPN table](#nrpn-table)
-  * [`CHAN MODE CC.M8I`](#chan-mode-ccm8i)
+* [Instruments](#instruments)
+  * [Normal Voice Instruments](#normal-voice-instruments)
+  * [SFX Voice Instruments](#sfx-voice-instruments)
+  * [Drum Voice Instruments (XG drumkits)](#drum-voice-instruments-xg-drumkits)
+  * [SFX Drum Voice Instruments (SFXkits)](#sfx-drum-voice-instruments-sfxkits)
+  * [(CC-only) Mix-in utility instruments](#cc-only-mix-in-utility-instruments)
+    * [Using mix-ins](#using-mix-ins)
+    * [`SW+PEDAL CC.M8I`](#swpedal-ccm8i)
+    * [`NRPN RPN CC.M8I`](#nrpn-rpn-ccm8i)
+      * [NRPN table](#nrpn-table)
+    * [`CHAN MODE CC.M8I`](#chan-mode-ccm8i)
 * [Limitations / Workarounds](#limitations--workarounds)
   * [M8i only sends Bank Select LSB, not MSB](#m8i-only-sends-bank-select-lsb-not-msb)
   * [`chXX`: Multi-timbral instruments saftey workaround](#chxx-multi-timbral-instruments-saftey-workaround)
@@ -101,8 +102,9 @@ Each contains its own copy of:
       * MIDI channel mode messages (ex: "All Notes Off")
 
 
+## Instruments
 
-## Normal Voice Instruments
+### Normal Voice Instruments
 
 The full XG "Normal Voice" list is documented on pages 2–3 of the [QY70 List
 Book].
@@ -148,7 +150,7 @@ screen (after loading the `.m8i` file) or by viewing the `.m8i` files from an
 external file browser that displays mixed-case names.
 
 
-## SFX Voice Instruments
+### SFX Voice Instruments
 
 SFX voices work almost the same as normal voices, except they use a bank select
 MSB of `0x40` "common" CCs.
@@ -183,7 +185,7 @@ an SFX voice: use the fx `CCD80` prior to playing the normal voice instrument's
 first note.
 
 
-## Drum Voice Instruments (XG drumkits)
+### Drum Voice Instruments (XG drumkits)
 
 
 The full XG "Drum Voice" instrument list is documented on pages 4–8 of the [QY70 List
@@ -207,7 +209,7 @@ an Drumkit voice: use the fx `CCD80` prior to playing the normal voice instrumen
 first note.
 
 
-## SFX Drum Voice Instruments (SFXkits)
+### SFX Drum Voice Instruments (SFXkits)
 
 SFXkits are collections of SFX voice instruments compiled into (very sparse)
 drumkits.  They are documented on page 8 of the [QY70 List Book], at the end of
@@ -224,7 +226,7 @@ the "Drum Voice" instrument list.
 SFXkits use the same CC tables as the XG drumkits
 
 
-## (CC-only) Mix-in utility instruments
+### (CC-only) Mix-in utility instruments
 
 The QY70 responds to many CC messages, but a single M8 MIDI instrument
 supports a maximum 10 `CCx` fx.
@@ -234,7 +236,7 @@ containing special "mix-in" utility instruments to provide supplementary CCs.
 Unlike the normal voice instruments, mix-ins don't send bank or program
 messages.
 
-### Using mix-ins
+#### Using mix-ins
 
 Mix-in instruments provide additional `CCx` fx and send to the same MIDI
 channel as their folder's normal voice instruments.  Using multiple instruments
@@ -273,7 +275,7 @@ Some tips:
 
 Each mix-in utility instrument provides a related collection of CCs:
 
-### `SW+PEDAL CC.M8I`
+#### `SW+PEDAL CC.M8I`
 
 The `_UTIL/SW+PEDAL CC.M8I` instrument provides all switch and pedal CCs, as
 well as a few basic sound controls (including XG's enigmatic AC1).  Some
@@ -326,7 +328,7 @@ song/pattern to execute the event.
 
 
 
-### `NRPN RPN CC.M8I`
+#### `NRPN RPN CC.M8I`
 
 The `_UTIL/NRPN RPN CC.M8I` mix-in instrument provides CCs for  NRPNs & RPNs,
 and a table with common NRPNs to trigger using `TH0`.
@@ -367,7 +369,7 @@ interrupt any previously playing instrument and tables on that track.)
 
 Pages 45―46 of the [QY70 List Book] cover the available RPNS & NRPNs
 
-#### NRPN table
+##### NRPN table
 
 To simplify sending N/RPNs from the M8, the mixin's table is pre-populated with
 MSB+LSB triggers for common NRPNs.
@@ -408,7 +410,7 @@ the QY just uses the instrument LFO to affect pitch, controlled by the mod
 wheel.  And so: it's "vibrato."
 
 
-### `CHAN MODE CC.M8I`
+#### `CHAN MODE CC.M8I`
 
 The `_UTIL/CHAN MODE CC.M8I` instrument has CCs to send MIDI channel mode
 messages. All of them are triggered with the value `00`.
@@ -510,7 +512,7 @@ It is very likely this issue will be fixed in future FW updates.
 ## Changelog
 
 ### 2.0.0
-2023-03-31 ― ineffable-twaddle
+2023-04-25 ― ineffable-twaddle
 - Update instruments to M8 v3 instrument format
 - Move Bank LSB CC into the instrument settings to free up `CCA`
 - Add common QY70 CCs to each voice instrument

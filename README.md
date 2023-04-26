@@ -4,7 +4,6 @@
 
 * [Overview](#overview)
 * [Contents](#contents)
-* [Instruments](#instruments)
   * [Normal Voice Instruments](#normal-voice-instruments)
   * [SFX Voice Instruments](#sfx-voice-instruments)
   * [Drum Voice Instruments (XG drumkits)](#drum-voice-instruments-xg-drumkits)
@@ -101,8 +100,6 @@ Each contains its own copy of:
       * RPNs/NRPNs
       * MIDI channel mode messages (ex: "All Notes Off")
 
-
-## Instruments
 
 ### Normal Voice Instruments
 

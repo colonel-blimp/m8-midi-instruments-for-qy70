@@ -17,6 +17,7 @@
 * [Limitations / Workarounds](#limitations--workarounds)
   * [M8i only sends Bank Select LSB, not MSB](#m8i-only-sends-bank-select-lsb-not-msb)
   * [`chXX`: Multi-timbral instruments saftey workaround](#chxx-multi-timbral-instruments-saftey-workaround)
+  * [M8 firmware 3.0.3a: Switching between certain instruments does not send `BANK`:`PG` messages](#m8-firmware-303a-switching-between-certain-instruments-does-not-send-bankpg-messages)
 * [Changelog](#changelog)
   * [2.0.0](#200)
   * [1.0.0](#100)
@@ -394,7 +395,7 @@ another NRPN is triggered or the special NRPN reset message (`THO0E`) is sent.
 | 0E  | NRPN Reset      | No data byte; just use `THO0E`    |
 
 
-** A note about XG LFO (vibrato) **
+**A note about XG LFO (vibrato)**
 
 The "Vibrato" parameters actually control the instrument's single LFO. In XG
 MIDI, this LFO can also be configured to affect amplitude, pitch, and/or
@@ -404,9 +405,8 @@ Unfortunately: these extra mappings are impossible to configure without using
 Sysex (which the M8 doesn't send).  As a result, the LFO is stuck modulating
 whatever the voice is configured to use it for. Practically every instrument on
 the QY just uses the instrument LFO to affect pitch, controlled by the mod
-wheel.
+wheel.  And so: it's "vibrato."
 
-And so: it's "vibrato."
 
 ### `CHAN MODE CC.M8I`
 
@@ -450,18 +450,35 @@ Select MSB to partition instruments into several categories:
 | 0x7E            | SFX kit                    |        |
 | 0x7F            | Drum voice / Rhythm kit    |        |
 
-Bank Select MSB is assumed to be 0 until changed, so if you are only using
-normal voice instruments, you will never need to send it.
+Bank Select MSB is 0 unless changed, so if you are only using normal voice
+instruments, you will never need to send it.
 
-To get back to
+The `.m8i` instruments for the other instrument categories (SFX voice, Drum
+Voice, SFX kit) use `CCD` to Bank Select MSB (CC0), with the default set to
+their bank MSB.  This ensures that the bank select message are always sent in
+the correct order, but at the expense of sending C00 before _every note_.
+
+For this reason, the "Normal voice" instruments do _not_ include Bank Select
+MSB (CC0).  This prevents unecessary CC0 traffic and keeps all 10 `CCx` slots
+for common CCs―but the trade-off is that :warning: playing a normal voice
+instrument after another kind of voice **does not automatically send the bank
+select MSB back to normal.** :warning:
+
+**Workaround:** When you are using a SFX/drumkit/SFXkit instrument, send `CCD80`
+just before switching to a normal voice instrument.  This sends the correct
+Bank Select MSB ahead of the normal instrument sending its natice Bank Select LSB
+& Program Change.
+
+
 
 ### `chXX`: Multi-timbral instruments saftey workaround
 
 The multiple `chXX/` folders are a multi-timbral safety feature: the M8
 instrument browser previews MIDI instruments by sending their program + bank
-changes to the channel _saved in each `.m8i` file_.  This makes it
+changes to the channel _saved in each `.m8i` file_.  This can make it
 dangerous to preview instruments for a multi-timbral device like the QY70
-unless all the `.m8i` files are already configured for the target MIDI channel.
+unless the previewed `.m8i` files are already configured for the target MIDI
+channel.
 
 :warning: Browsing MIDI instruments on the wrong MIDI channels **risks
 accidentally reconfiguring unrelated voices.**
@@ -471,6 +488,24 @@ instruments that send CC0/Bank Select MSB messages, because it won't be
 possible to to switch back to the normal voice instrument without explicitly
 sending Bank Select MSB 0.
 
+
+### M8 firmware 3.0.3a: Switching between certain instruments does not send `BANK`:`PG` messages
+
+While testing this pack on M8 FW 3.0.3a, it was observed that changing between certain
+instrument pairs (in either direction) from the M8 does not send the new
+instrument's BANK LSB (CC32) + program change messages.  This is very rare, but
+repeatable between affected instrument pairs.
+
+Some example pairings (in `BANK:PG` format) include:
+
+* `66:101` <-> `67:101`
+* `64:101` <-> `65:101`
+* `000:102` <-> `008:102`
+
+**Workaround:** Change to an unaffected instrument to force the change messages,
+then change to the target instrument.
+
+It is very likely this issue will be fixed in future FW updates.
 
 ## Changelog
 
